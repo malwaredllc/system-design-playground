@@ -22,7 +22,11 @@ async function run() {
                 },
                 {
                     "topic": "Likes",
-                    "numPartitions": 2
+                    "numPartitions": 1
+                },
+                {
+                    "topic": "Comments",
+                    "numPartitions": 1
                 },
             ]
         })
