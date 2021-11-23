@@ -16,13 +16,23 @@ async function run() {
         console.log("Connected!")
 
 
+        // publish message to users topic
         const partition = msg[0] < "N" ? 0 : 1;
-
         const result = await producer.send({
             "topic": "Users",
             "messages": [{
                 "value": msg,
                 "partition": partition
+            }]
+        })
+        console.log(`Sent message: ${msg}`)
+        console.log(`Result: ${JSON.stringify(result)}`)
+
+        // publish message to likes topic
+        const result_like = await producer.send({
+            "topic": "Likes",
+            "messages": [{
+                "value": 1
             }]
         })
         console.log(`Sent message: ${msg}`)
