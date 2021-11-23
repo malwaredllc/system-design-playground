@@ -15,10 +15,16 @@ async function run() {
 
         // Users topic has 2 partitions: A-M, N-Z
         await admin.createTopics({
-            "topics": [{
-                "topic": "Users",
-                "numPartitions": 2
-            }]
+            "topics": [
+                {
+                    "topic": "Users",
+                    "numPartitions": 2
+                },
+                {
+                    "topic": "Likes",
+                    "numPartitions": 2
+                },
+            ]
         })
 
         console.log("Created successfully!")
