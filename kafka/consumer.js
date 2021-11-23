@@ -25,6 +25,18 @@ async function run() {
                 console.log(`Received message: ${result.message.value} on partition ${result.partition}`)
             }
         })
+
+        // test consuming message from events topic
+        consumer.subscribe({
+            "topic": "Events",
+            "fromBeginning": true
+        })
+
+        await consumer.run({
+            "eachMessage": async result => {
+                console.log(`Received message: ${result.message.value} on partition ${result.partition}`)
+            }
+        })
     } catch(ex) {
         console.error(`Something bad happened: ${ex}`)
     }

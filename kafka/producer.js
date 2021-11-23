@@ -38,6 +38,16 @@ async function run() {
         console.log(`Sent message: ${msg}`)
         console.log(`Result: ${JSON.stringify(result)}`)
 
+        // publish message to events topic
+        const result_event = await producer.send({
+            "topic": "Events",
+            "messages": [{
+                "value": "purchase"
+            }]
+        })
+        console.log(`Sent message: ${msg}`)
+        console.log(`Result: ${JSON.stringify(result)}`)
+
         await producer.disconnect()
     } catch(ex) {
         console.error(`Something bad happened: ${ex}`)

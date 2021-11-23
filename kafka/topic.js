@@ -28,6 +28,10 @@ async function run() {
                     "topic": "Comments",
                     "numPartitions": 1
                 },
+                {
+                    "topic": "Events",
+                    "numPartitions": 1
+                }
             ]
         })
 
