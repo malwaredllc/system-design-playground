@@ -1,0 +1,70 @@
+
+newsfeed - 
+
+
+USERS
+	Relationships
+	 A) Facebook (bi-directional friends)
+	 	Graph database
+		
+	 B) Twitter (unidirectional follow)
+	 	Relational database with B+ Tree under the hood for faster reads
+			User
+			- user_id pk
+			- username
+			- email
+
+			Follows
+			- user_id fk
+			- follows_user_id fk
+	Metadata
+		- user metadata stored in noSQL document db like MongoDB as JSON
+		- Cache in front of mongodb (Redis)
+
+POSTS
+	Posts in Relational db with B+-Tree engine like Postgres because we want to support quick range queries for posts in the past 24 hours
+		Posts
+		- post_id
+		- user_id
+		- img url
+		- text
+		- timestamp
+
+	Cache user's follower lists
+
+IMAGES
+	Store images in S3 (blobs)
+	Cache in front of S3
+	push to CDNs globally for low latency
+
+NEWSFEED
+
+	API: newfeed(user_id)
+		- get all posts in past 24 hours by all people user follows
+		- ranking algorithm
+
+	- Cache in front of newsfeed service to store user's latest newsfeed (Redis)
+	- Client (web/mobile app) always retrieves their newsfeed from the cache
+	- The cached newsfeed is updated whenever someone they follow makes a new post
+
+	API: update_newsfeeds(user_id, post_id)
+		- When a user makes a new post, a notification will be sent to newsfeed service to update the cached newsfeeds of all their followers
+		- these requests will be placed in a message queue which are processed by a pool of workers in FIFO order
+
+REPLICATION
+	- Caches (redis) 
+		- will use simple single-leader asyncronous replication with eventual consistency model
+		- client side consistent hashing on primary key to choose the node and support easily adding/removing nodes without storming DB with key remappings
+
+	- Relational DBs (postgres)
+		- since this is a read-heavy application we are safe to enforce a strong consistency model here with ACID transactions 
+		- replication can be done via write-ahead-log shipping
+		- multi-leader replication (one in each datacenter)
+		- ring topology
+		- conflicts resolved via vector clocks and last-write wins
+
+CONSISTENCY
+- eventual consistency for caches and s3 storage and nosql dbs
+- strong consistency for relational dbs
+
+
