@@ -1,0 +1,13 @@
+Notification service:
+
+functional requirements:
+- createTopic(topic)
+- publish(topic, msg)
+- subscribe(topic, endpoint)
+
+non functional requirements:
+- scalable
+- high availability
+- high performance low latency
+
+

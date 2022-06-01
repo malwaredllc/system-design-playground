@@ -1,0 +1,57 @@
+
+client
+server
+
+- 1 to 1 communication
+- small group chats (up to 100 people)
+- text limit 500 characters
+- 10 million DAU
+- mobile clients
+- messages are persisted forever
+- high availability, moderate consistency
+
+
+- GENERIC FEATURES: user signup, login, authentication
+- MESSENGER FEATURES: near real-time chat, group chats
+
+
+Generic features:
+- HTTP requests from client to load balancer
+- load balanacer distributes requests to API servers
+
+	API servers:
+	- /signup
+	- /login
+	- /chat/{username}
+
+	Metadata service:
+	- user account info
+	- profile info
+	- device info
+	- online status
+	 
+	Cache infront of metadata service
+
+	Metadata db
+	- NoSQL key value store (Redis)
+
+Messenger features:
+	- chat service servers are STATEFUL
+	- websocket connection from client to a chat service server
+	- messages are sent from client to server via websocket
+	- chat server places messages in kafka topic for that specific user
+	- chat server subscribes to kafka topics for all users it has open websocket connections with
+	- workers also persist message in a persistent key value store like redis
+	- cache messages received locally on the device
+	- if user is offline when a message is sent to them:
+		- request for push Apple/Andoird push notification service placed in queue
+		- workers processe that queue and send requests to those services
+		- user gets the push notification, and when they open the app (then or later) and web socket connection is formed, the steps above proceed as normal and they receive the message
+
+	Online/offline status:
+		- status will be in user metadata service
+		- update status to online when websocket connection is initialized
+		- heartbeat mechanism from client to server
+		- if server doesn't receive heartbeat for 1 min, update status to offline
+
+
